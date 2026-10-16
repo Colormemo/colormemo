@@ -223,7 +223,10 @@ test('частичный зачёт в последовательности: п�
     .expect(200);
 
   // один цвет из трёх на своём месте
-  assert.ok(result.body.accuracy > 30 && result.body.accuracy < 40, `получили ${result.body.accuracy}`);
+  assert.ok(
+    result.body.accuracy > 30 && result.body.accuracy < 40,
+    `получили ${result.body.accuracy}`,
+  );
 });
 
 test('неизвестная ручка API отвечает JSON, а не страницей', async () => {

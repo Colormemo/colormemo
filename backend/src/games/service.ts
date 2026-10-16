@@ -82,9 +82,7 @@ export class GamesService {
       answer: answer as unknown as Record<string, unknown>,
     });
 
-    const isRecord = userId
-      ? await this.isRecord(userId, task, score)
-      : false;
+    const isRecord = userId ? await this.isRecord(userId, task, score) : false;
 
     return {
       attemptId: stored.id,
@@ -105,12 +103,7 @@ export class GamesService {
   }
 
   private async isRecord(userId: string, task: GameTask, score: number): Promise<boolean> {
-    const best = await this.repo.bestScore(
-      userId,
-      task.gameType,
-      task.difficulty,
-      task.attemptId,
-    );
+    const best = await this.repo.bestScore(userId, task.gameType, task.difficulty, task.attemptId);
     return best === null || score > best;
   }
 }

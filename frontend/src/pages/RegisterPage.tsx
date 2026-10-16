@@ -25,7 +25,13 @@ export function RegisterPage() {
 
         <label className="field">
           Пароль
-          <input name="password" type="password" autoComplete="new-password" required minLength={8} />
+          <input
+            name="password"
+            type="password"
+            autoComplete="new-password"
+            required
+            minLength={8}
+          />
         </label>
 
         <button type="submit" className="primary" disabled>
