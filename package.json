@@ -1,0 +1,28 @@
+{
+  "name": "colormemo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Веб-приложение для тренировки зрительной памяти и цветового восприятия",
+  "workspaces": [
+    "packages/*",
+    "backend",
+    "frontend"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "build:shared": "npm run build -w @colormemo/shared",
+    "build": "npm run build:shared && npm run build -w backend && npm run build -w frontend",
+    "test": "npm run build:shared && npm test -w @colormemo/shared",
+    "dev:back": "npm run dev -w backend",
+    "dev:front": "npm run dev -w frontend",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md,css,yaml,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,json,md,css,yaml,yml}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  }
+}
