@@ -1,0 +1,37 @@
+# Проверка кода при пул-реквесте и пуше в main.
+#
+# Зачем это нужно нам: мы работаем на разных операционных системах, и проверка
+# на чистой машине Linux ловит ошибки, которые не видны локально, —
+# например расхождение в регистре имён файлов (на маке и Windows регистр
+# не важен, а на Linux важен).
+
+name: Проверка кода
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci --ignore-scripts
+
+      - name: Форматирование
+        run: npm run format:check
+
+      - name: Сборка и тесты общего пакета
+        run: npm test
+
+      - name: Типы и сборка фронта
+        run: npm run build -w frontend
+        env:
+          VITE_USE_MOCK: 'true'
