@@ -1,0 +1,407 @@
+/*
+ * Черновые стили каркаса. Заменятся на UI-кит Кати.
+ * Цвета интерфейса нарочно нейтральные: любой акцентный цвет на странице
+ * искажает восприятие цвета в задании — про это важно помнить дизайнерам.
+ */
+
+:root {
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --text: #1c1c1e;
+  --muted: #6b6b70;
+  --border: #d8d8dc;
+  --accent: #3a3a3c;
+  --radius: 12px;
+
+  color-scheme: light;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+
+.badge {
+  margin: 12px 0 0;
+  padding: 8px 12px;
+  background: #fff4d6;
+  border: 1px solid #f0d89a;
+  border-radius: var(--radius);
+  font-size: 14px;
+}
+
+.levels {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.level {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.level--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+.game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.game h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.hint {
+  margin: 0;
+  color: var(--muted);
+}
+
+.swatch {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.swatch--big {
+  width: 200px;
+  height: 200px;
+}
+
+.countdown {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.accuracy {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.compare {
+  display: flex;
+  gap: 24px;
+  text-align: center;
+}
+
+.compare span {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.compare code {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.primary {
+  min-height: 48px;
+  padding: 0 24px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.error {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  background: #ffe8e6;
+  border: 1px solid #f5b3ad;
+}
+
+footer p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* Телефон */
+@media (max-width: 420px) {
+  .swatch--big {
+    width: 160px;
+    height: 160px;
+  }
+}
+
+
+/* --- Каркас страниц ------------------------------------------------------ */
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  gap: 4px;
+  margin-right: auto;
+}
+
+.nav__link {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: var(--radius);
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.nav__link:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.nav__link--active {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.footer {
+  padding: 16px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.page--narrow {
+  max-width: 360px;
+}
+
+.page h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.lead {
+  margin: 0;
+  color: var(--muted);
+}
+
+.back {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+/* --- Список игр ---------------------------------------------------------- */
+
+.cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+  width: 100%;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.card__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.card h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.card__text,
+.card__note {
+  margin: 0;
+  color: var(--muted);
+}
+
+.card__note {
+  font-size: 14px;
+}
+
+.tag {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.tag--ready {
+  border-color: #b5d9b8;
+  background: #eef7ef;
+  color: #2f6d36;
+}
+
+.tag--inProgress {
+  border-color: #f0d89a;
+  background: #fff4d6;
+  color: #7a5c12;
+}
+
+/* --- Состояния страницы -------------------------------------------------- */
+
+.state {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--muted);
+}
+
+.state--error {
+  border-style: solid;
+  border-color: #f5b3ad;
+  background: #ffe8e6;
+}
+
+.state__title {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.state__hint {
+  margin: 0;
+}
+
+/* --- Формы --------------------------------------------------------------- */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.field input {
+  min-height: 44px;
+  padding: 0 12px;
+  font-size: 16px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.form__note {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.primary--link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
