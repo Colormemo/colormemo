@@ -1,0 +1,99 @@
+// Схема базы данных.
+//
+// Сущности взяты из лабораторной 1: User, Game, GameTask, Result.
+// Это рабочая основа — Настя уточняет её в лабе 2, когда соберёт полный
+// список данных пользователя, игры, задания, попытки и результата.
+//
+// Миграции:
+//   npx prisma migrate dev --name init   (создать и применить)
+//   npx prisma studio                    (посмотреть данные в браузере)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Вид игры. Значения совпадают с GameType в общем пакете @colormemo/shared.
+enum GameType {
+  COLOR_RECALL
+  COLOR_CHOICE
+  COLOR_SEQUENCE
+}
+
+/// Пользователь. Регистрация нужна, чтобы сохранять результаты и прогресс.
+model User {
+  id           String   @id @default(uuid())
+  login        String   @unique
+  /// Только хеш пароля (argon2). Сам пароль не храним нигде и никогда.
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  tasks GameTask[]
+
+  @@map("users")
+}
+
+/// Справочник видов игр: название и описание для экрана выбора игры.
+/// Заполняется один раз при развёртывании (prisma/seed.ts).
+model Game {
+  id          String   @id @default(uuid())
+  type        GameType @unique
+  title       String
+  description String
+  /// Показывать ли игру в интерфейсе. Удобно, чтобы прятать недоделанные.
+  enabled     Boolean  @default(true)
+
+  @@map("games")
+}
+
+/// Конкретное сгенерированное задание = одна попытка игрока.
+///
+/// Задание генерирует и хранит сервер. Это важно: клиент присылает только
+/// свой ответ, а очки считает сервер по сохранённому здесь заданию —
+/// иначе результат можно подменить через консоль браузера.
+model GameTask {
+  id         String   @id @default(uuid())
+  gameType   GameType
+  /// Уровень сложности: 1–2 в плане-минимум, до 5 в плане-максимум.
+  difficulty Int
+  /// Сколько миллисекунд показывался цвет.
+  showTimeMs Int
+  /// Параметры задания: целевой цвет, варианты, последовательность.
+  /// JSON, потому что набор полей у трёх игр разный.
+  payload    Json
+  createdAt  DateTime @default(now())
+
+  /// null — играл незарегистрированный гость, результат не сохраняем в статистику.
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  result Result?
+
+  /// Индекс под выборку статистики: «все попытки игрока в этой игре».
+  @@index([userId, gameType, difficulty])
+  @@map("game_tasks")
+}
+
+/// Результат проверки ответа.
+model Result {
+  id String @id @default(uuid())
+
+  taskId String   @unique
+  task   GameTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  /// Точность в процентах, 0–100. Считается по Delta E 2000, а не по RGB.
+  accuracy Float
+  /// Начисленные очки.
+  score    Int
+  /// Сколько миллисекунд игрок думал над ответом — пригодится для статистики.
+  responseTimeMs Int
+  /// Что именно ответил игрок. Нужно для экрана разбора и для анализа ошибок.
+  answer   Json
+  createdAt DateTime @default(now())
+
+  @@map("results")
+}
