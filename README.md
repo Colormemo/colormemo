@@ -103,20 +103,9 @@ npm run dev:front    # http://localhost:5173
 
 ### На Windows (Настя)
 
-Всё то же самое, но два условия:
+Отдельная инструкция со всеми шагами: [docs/setup-windows.md](docs/setup-windows.md).
 
-1. **Работать в WSL, а не в PowerShell.** Установка: в PowerShell от администратора `wsl --install`, перезагрузка. Дальше все команды — в терминале Ubuntu.
-2. **Репозиторий должен лежать внутри WSL**, например в `~/projects/colormemo`, а не в `/mnt/c/Users/...`. На диске Windows Docker и сборка работают в разы медленнее.
-
-Один раз настроить Git, чтобы не воевать с переносами строк:
-
-```bash
-git config --global core.autocrlf false
-```
-
-В Docker Desktop включить интеграцию с WSL: Settings → Resources → WSL integration.
-
-Если контейнер не поднимается с ошибкой про доступ к сокету — порт занят системой Windows. Поменяйте `5433` в `compose.yaml` и `DATABASE_URL` на другой, например `5434`.
+Коротко: ставятся Node 22, Git for Windows и Docker Desktop, работа идёт в PowerShell, WSL не нужен. Обязательно один раз выполнить `git config --global core.autocrlf false`, иначе переносы строк разойдутся с macOS.
 
 ---
 
