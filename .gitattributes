@@ -1,0 +1,25 @@
+# Единые переносы строк для мака и Windows.
+# Без этого файла Git будет показывать "изменён весь файл" при правке одной строки.
+* text=auto eol=lf
+
+*.sh   text eol=lf
+*.ts   text eol=lf
+*.tsx  text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml  text eol=lf
+*.md   text eol=lf
+*.css  text eol=lf
+*.html text eol=lf
+*.prisma text eol=lf
+
+*.svg  text eol=lf
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.webp binary
+*.ico  binary
+*.woff binary
+*.woff2 binary
+*.mp3  binary
+*.wav  binary

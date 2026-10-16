@@ -1,0 +1,41 @@
+# База данных для разработки.
+# Запуск:  docker compose up -d
+# Остановка: docker compose down   (данные сохраняются)
+# Снести данные и начать с чистой базы: docker compose down -v
+#
+# Порт 5433, а не стандартный 5432 — чтобы не конфликтовать с локально
+# установленным Postgres и с занятыми портами на Windows.
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: colormemo-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: colormemo
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: dev
+    ports:
+      - '5433:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U app -d colormemo']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Веб-интерфейс к базе: http://localhost:8080
+  # Система: PostgreSQL, сервер: db, пользователь: app, пароль: dev, база: colormemo
+  adminer:
+    image: adminer:latest
+    container_name: colormemo-adminer
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - '8080:8080'
+
+volumes:
+  pgdata:
