@@ -1,0 +1,12 @@
+// Сборка для фронта: Vite и Rollup понимают только ESM и не умеют
+// разбирать именованные экспорты из CommonJS. Без этой сборки
+// сборка фронта падает с ошибкой «... is not exported by ...».
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "outDir": "dist/esm"
+  },
+  "exclude": ["src/**/*.test.ts"]
+}

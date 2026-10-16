@@ -1,0 +1,9 @@
+// Сборка для NestJS: он работает в формате CommonJS.
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "dist/cjs"
+  }
+}

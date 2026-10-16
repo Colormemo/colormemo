@@ -1,0 +1,4 @@
+// Конфиг для редактора. Реальные сборки — в tsconfig.cjs.json и tsconfig.esm.json.
+{
+  "extends": "./tsconfig.cjs.json"
+}
