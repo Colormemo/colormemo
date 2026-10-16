@@ -52,9 +52,7 @@ export function AppLayout() {
         <Outlet />
       </main>
 
-      <footer className="footer">
-        Учебный проект, Московский Политех, группа 231-334
-      </footer>
+      <footer className="footer">Учебный проект, Московский Политех, группа 231-334</footer>
     </div>
   );
 }
