@@ -1,11 +1,12 @@
 /**
- * Три состояния страницы: загрузка, пусто, ошибка.
+ * Три состояния страницы: загрузка, пусто, ошибка. Задача 25 по лабе 4.
  *
- * Задача 25 по лабе 4 поручает дизайнерам оформление этих состояний,
- * но каркас нужен раньше: страницы профиля и статистики без него
- * придётся переписывать, когда макеты появятся. Сейчас это нейтральные
- * блоки, в них меняется только оформление, а не места вызова.
+ * Вынесены в один файл, чтобы профиль и статистика вели себя одинаково:
+ * одни и те же отступы, одна и та же кнопка повтора, одна и та же
+ * интонация текста.
  */
+
+import type { ReactNode } from 'react';
 
 interface LoadingProps {
   text?: string;
@@ -13,7 +14,7 @@ interface LoadingProps {
 
 export function PageLoading({ text = 'Загрузка…' }: LoadingProps) {
   return (
-    <div className="state" role="status" aria-live="polite">
+    <div className="notice" role="status" aria-live="polite">
       {text}
     </div>
   );
@@ -21,16 +22,16 @@ export function PageLoading({ text = 'Загрузка…' }: LoadingProps) {
 
 interface EmptyProps {
   title: string;
-  /** Что пользователь может сделать, чтобы данные появились */
+  /** Что человек может сделать, чтобы данные появились */
   hint?: string;
-  action?: React.ReactNode;
+  action?: ReactNode;
 }
 
 export function PageEmpty({ title, hint, action }: EmptyProps) {
   return (
-    <div className="state">
-      <p className="state__title">{title}</p>
-      {hint && <p className="state__hint">{hint}</p>}
+    <div className="empty">
+      <p className="empty__title">{title}</p>
+      {hint && <p className="empty__hint">{hint}</p>}
       {action}
     </div>
   );
@@ -43,11 +44,11 @@ interface ErrorProps {
 
 export function PageError({ message, onRetry }: ErrorProps) {
   return (
-    <div className="state state--error" role="alert">
-      <p className="state__title">Не удалось загрузить данные</p>
-      <p className="state__hint">{message}</p>
+    <div className="empty empty--error" role="alert">
+      <p className="empty__title">Не удалось загрузить данные</p>
+      <p className="empty__hint">{message}</p>
       {onRetry && (
-        <button type="button" className="primary" onClick={onRetry}>
+        <button type="button" className="button" onClick={onRetry}>
           Попробовать снова
         </button>
       )}
