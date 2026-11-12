@@ -14,12 +14,12 @@ import type { Express } from 'express';
 import { colorDifference, CHOICE_LEVELS, RECALL_LEVELS } from '@colormemo/shared';
 
 import { createApp } from '../app';
-import { MemoryTaskRepository } from './memory.repository';
+import { MemoryRepository } from './memory.repository';
 
 let app: Express;
 
 beforeEach(() => {
-  app = createApp({ repo: new MemoryTaskRepository() });
+  app = createApp({ repo: new MemoryRepository() });
 });
 
 test('health отвечает', async () => {

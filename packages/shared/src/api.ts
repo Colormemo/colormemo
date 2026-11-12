@@ -61,8 +61,31 @@ export interface GameStats {
 export interface StatsResponse {
   totalAttempts: number;
   totalScore: number;
+  /** средняя точность по всем играм, % */
+  averageAccuracy: number;
   byGame: GameStats[];
 }
+
+// --- История прохождений ---------------------------------------------------
+
+/** Одна строка истории: что игрок проходил и с каким результатом. */
+export interface HistoryEntry {
+  id: string;
+  gameType: GameType;
+  difficulty: Difficulty;
+  accuracy: number;
+  score: number;
+  responseTimeMs: number;
+  /** когда ответили, в формате ISO */
+  playedAt: string;
+}
+
+export interface HistoryResponse {
+  entries: HistoryEntry[];
+}
+
+/** Сколько последних попыток показываем в профиле по умолчанию. */
+export const HISTORY_LIMIT = 20;
 
 /** Список адресов, чтобы фронт и бэк не расходились в путях. */
 export const API_ROUTES = {
@@ -73,4 +96,45 @@ export const API_ROUTES = {
   startTask: '/api/games/task',
   submitAnswer: '/api/games/answer',
   stats: '/api/stats',
+  history: '/api/stats/history',
 } as const;
+
+// --- Ограничения на логин и пароль ----------------------------------------
+
+/**
+ * Правила для логина и пароля лежат здесь, а не в форме и не в ручке:
+ * одна и та же проверка нужна на клиенте (чтобы сразу показать ошибку)
+ * и на сервере (потому что клиенту доверять нельзя).
+ */
+export const LOGIN_MIN_LENGTH = 3;
+export const LOGIN_MAX_LENGTH = 24;
+export const PASSWORD_MIN_LENGTH = 8;
+export const PASSWORD_MAX_LENGTH = 72;
+
+/** Логин: латиница, цифры, дефис и подчёркивание. */
+export const LOGIN_PATTERN = /^[a-zA-Z0-9_-]+$/;
+
+/** Текст ошибки или null, если логин подходит. */
+export function validateLogin(login: string): string | null {
+  if (login.length < LOGIN_MIN_LENGTH) {
+    return `Логин короче ${LOGIN_MIN_LENGTH} символов`;
+  }
+  if (login.length > LOGIN_MAX_LENGTH) {
+    return `Логин длиннее ${LOGIN_MAX_LENGTH} символов`;
+  }
+  if (!LOGIN_PATTERN.test(login)) {
+    return 'В логине допустимы латинские буквы, цифры, дефис и подчёркивание';
+  }
+  return null;
+}
+
+/** Текст ошибки или null, если пароль подходит. */
+export function validatePassword(password: string): string | null {
+  if (password.length < PASSWORD_MIN_LENGTH) {
+    return `Пароль короче ${PASSWORD_MIN_LENGTH} символов`;
+  }
+  if (password.length > PASSWORD_MAX_LENGTH) {
+    return `Пароль длиннее ${PASSWORD_MAX_LENGTH} символов`;
+  }
+  return null;
+}

@@ -29,7 +29,7 @@ export const GAME_CATALOG: GameCard[] = [
     gameType: GAME_SLUGS['choose-color'],
     title: GAME_TITLES.COLOR_CHOICE,
     description: 'Запомните цвет и найдите его среди похожих оттенков',
-    status: 'inProgress',
+    status: 'ready',
     required: true,
   },
   {
