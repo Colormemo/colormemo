@@ -13,24 +13,45 @@ import type { Request, Response } from 'express';
 import { env } from '../env';
 import { SESSION_COOKIE, SESSION_TTL_MS, createToken, parseCookies, readToken } from './token';
 
+/**
+ * Помечать ли cookie как «только для защищённого соединения».
+ *
+ * Решаем по тому, как пришёл запрос, а не по режиму сборки. Если жёстко
+ * поставить secure в production, приложение в контейнере перестанет пускать
+ * внутрь по http://localhost — браузер просто не примет cookie, и вход
+ * будет молча не срабатывать. Если не ставить никогда, то за туннелем или
+ * за настоящим хостингом cookie поедет и по открытому каналу.
+ *
+ * req.secure сам по себе знает только про соединение до сервера, а за
+ * прокси оно всегда http. Поэтому в app.ts включено доверие к первому
+ * прокси, и Express читает настоящий протокол из X-Forwarded-Proto.
+ */
+function isSecure(req: Request): boolean {
+  return req.secure;
+}
+
 /** Ставит cookie сессии. */
-export function setSessionCookie(res: Response, userId: string): void {
+export function setSessionCookie(req: Request, res: Response, userId: string): void {
   res.cookie(SESSION_COOKIE, createToken(userId, env.authSecret), {
     httpOnly: true,
     sameSite: 'lax',
-    // В разработке сайт открыт по http, и secure-cookie браузер бы не принял.
-    secure: env.isProduction,
+    secure: isSecure(req),
     maxAge: SESSION_TTL_MS,
     path: '/',
   });
 }
 
-/** Снимает cookie сессии (выход из аккаунта). */
-export function clearSessionCookie(res: Response): void {
+/**
+ * Снимает cookie сессии (выход из аккаунта).
+ *
+ * Признаки должны совпадать с теми, с которыми cookie ставилась, иначе
+ * браузер посчитает это другой cookie и старая останется на месте.
+ */
+export function clearSessionCookie(req: Request, res: Response): void {
   res.clearCookie(SESSION_COOKIE, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: env.isProduction,
+    secure: isSecure(req),
     path: '/',
   });
 }

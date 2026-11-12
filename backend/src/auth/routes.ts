@@ -33,7 +33,7 @@ export function authRouter(auth: AuthService): Router {
       const user = await auth.register(body.login, body.password);
 
       // После регистрации сразу пускаем внутрь: отдельный вход не нужен.
-      setSessionCookie(res, user.id);
+      setSessionCookie(req, res, user.id);
       res.status(201).json({ user } satisfies AuthResponse);
     } catch (error) {
       next(error);
@@ -45,15 +45,15 @@ export function authRouter(auth: AuthService): Router {
       const body = credentialsSchema.parse(req.body);
       const user = await auth.login(body.login, body.password);
 
-      setSessionCookie(res, user.id);
+      setSessionCookie(req, res, user.id);
       res.json({ user } satisfies AuthResponse);
     } catch (error) {
       next(error);
     }
   });
 
-  router.post('/logout', (_req, res) => {
-    clearSessionCookie(res);
+  router.post('/logout', (req, res) => {
+    clearSessionCookie(req, res);
     res.status(204).end();
   });
 
@@ -70,7 +70,7 @@ export function authRouter(auth: AuthService): Router {
        * с мёртвой сессией до истечения срока.
        */
       if (!user) {
-        clearSessionCookie(res);
+        clearSessionCookie(req, res);
         throw new AuthError('Вы не вошли в аккаунт', 401);
       }
 

@@ -25,6 +25,15 @@ export interface AppOptions {
 export function createApp({ repo, clientDir = '' }: AppOptions): Express {
   const app = express();
 
+  /*
+   * За туннелем или хостингом до нашего сервера запрос доходит по http,
+   * а до браузера шёл по https. Без этой строки Express считает соединение
+   * незащищённым и cookie сессии уезжает без признака secure.
+   * Доверяем только первому прокси: доверие ко всем подряд позволило бы
+   * любому подделать X-Forwarded-Proto обращением напрямую.
+   */
+  app.set('trust proxy', 1);
+
   app.use(express.json({ limit: '32kb' }));
 
   // --- API ---------------------------------------------------------------
