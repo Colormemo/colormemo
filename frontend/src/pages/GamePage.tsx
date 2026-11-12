@@ -1,30 +1,47 @@
 /**
- * Страница конкретной игры. Разбирает адрес, выбирает уровень сложности
+ * Страница игры: разбирает адрес, держит выбранный уровень сложности
  * и подставляет нужный игровой экран.
  *
- * Сами игровые экраны (задачи 35 и 36 по лабе 4) зависят от макетов
- * 15–21, поэтому здесь пока подключён только прототип «Повтори цвет»,
- * а «Выбери цвет» ждёт макета.
+ * Сам цикл раундов живёт в useGameSession и одинаков для всех игр,
+ * поэтому страница про него почти ничего не знает — только создаёт сессию
+ * и отдаёт её экрану игры.
  */
 
-import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { MAX_DIFFICULTY, type Difficulty } from '@colormemo/shared';
 
+import { ColorChoiceGame } from '../features/games/ColorChoiceGame';
 import { ColorRecallGame } from '../features/games/ColorRecallGame';
 import { findGameBySlug } from '../features/games/catalog';
+import { useGameSession } from '../features/games/useGameSession';
+import { useDifficulty } from '../features/games/useDifficulty';
 import { ROUTES } from '../routes';
 import { NotFoundPage } from './NotFoundPage';
 
-const LEVELS = Array.from({ length: MAX_DIFFICULTY }, (_, i) => (i + 1) as Difficulty);
+const LEVELS = Array.from({ length: MAX_DIFFICULTY }, (_, index) => (index + 1) as Difficulty);
+
+const LEVEL_NAMES: Record<number, string> = {
+  1: 'обычный',
+  2: 'сложный',
+};
 
 export function GamePage() {
   const { gameSlug } = useParams();
   const game = findGameBySlug(gameSlug);
-  const [difficulty, setDifficulty] = useState<Difficulty>(1);
+  const [difficulty, setDifficulty] = useDifficulty();
+
+  // Хуки обязаны вызываться в одном и том же порядке при каждом отрисовывании,
+  // поэтому сессию создаём до проверки на «нет такой игры». Для
+  // несуществующего адреса берём любой допустимый вид игры: экран
+  // всё равно не покажется.
+  const session = useGameSession(game?.gameType ?? 'COLOR_RECALL', difficulty);
 
   if (!game || game.status === 'planned') return <NotFoundPage />;
+
+  // Пока идёт серия, уровень менять нельзя: иначе средняя точность за серию
+  // окажется собрана из заданий разной сложности и ничего не будет значить.
+  const levelsLocked = session.phase !== 'idle' && session.phase !== 'finished';
 
   return (
     <section className="page">
@@ -32,31 +49,33 @@ export function GamePage() {
         ← Все игры
       </Link>
 
-      <div className="levels">
-        <span>Сложность:</span>
+      <header className="page__head">
+        <h1>{game.title}</h1>
+        <p className="page__lead">{game.description}</p>
+      </header>
+
+      <div className="levels" role="group" aria-label="Уровень сложности">
+        <span className="levels__label">Сложность</span>
         {LEVELS.map((level) => (
           <button
             key={level}
             type="button"
-            className={level === difficulty ? 'level level--active' : 'level'}
+            className={level === difficulty ? 'levels__item levels__item--on' : 'levels__item'}
             onClick={() => setDifficulty(level)}
+            disabled={levelsLocked}
             aria-pressed={level === difficulty}
           >
-            {level}
+            {LEVEL_NAMES[level] ?? level}
           </button>
         ))}
       </div>
 
-      {game.gameType === 'COLOR_RECALL' ? (
-        <ColorRecallGame difficulty={difficulty} />
+      {levelsLocked && <p className="levels__note">Уровень можно сменить после серии.</p>}
+
+      {game.gameType === 'COLOR_CHOICE' ? (
+        <ColorChoiceGame session={session} />
       ) : (
-        <div className="state">
-          <p className="state__title">Экран игры «{game.title}» в разработке</p>
-          <p className="state__hint">
-            Интерфейс собирается после макета и состояний выбора ответа (задачи 15, 18 и 20 по
-            плану). Логика генерации вариантов и проверки ответа на сервере уже готова.
-          </p>
-        </div>
+        <ColorRecallGame session={session} />
       )}
     </section>
   );
