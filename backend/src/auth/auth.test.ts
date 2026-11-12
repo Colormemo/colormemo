@@ -109,6 +109,26 @@ test('cookie сессии недоступна скриптам страницы
   assert.match(cookie, /SameSite=Lax/i);
 });
 
+test('по открытому соединению cookie без secure, за https-прокси — с ним', async () => {
+  const plain = await request(app).post('/api/auth/register').send(CREDENTIALS).expect(201);
+  const plainCookie = (plain.headers['set-cookie'] as unknown as string[])[0];
+
+  // Локальная разработка идёт по http: с признаком secure браузер бы
+  // cookie не принял и вход молча не сработал бы.
+  assert.equal(/Secure/i.test(plainCookie), false);
+
+  const behindProxy = await request(app)
+    .post('/api/auth/login')
+    .set('X-Forwarded-Proto', 'https')
+    .send(CREDENTIALS)
+    .expect(200);
+  const proxyCookie = (behindProxy.headers['set-cookie'] as unknown as string[])[0];
+
+  // За туннелем или хостингом до браузера соединение защищённое —
+  // тогда cookie не должна ходить по открытому каналу.
+  assert.match(proxyCookie, /Secure/i);
+});
+
 test('занятый логин отклоняется, в том числе в другом регистре', async () => {
   await request(app).post('/api/auth/register').send(CREDENTIALS).expect(201);
 
