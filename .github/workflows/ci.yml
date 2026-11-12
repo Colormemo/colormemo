@@ -31,7 +31,11 @@ jobs:
       - name: Сборка и тесты общего пакета
         run: npm test
 
+      # Тесты бэка поднимают настоящие ручки API поверх хранилища в памяти,
+      # поэтому Postgres в CI не нужен. Клиент Prisma нужен только для типов,
+      # движок базы не скачивается.
+      - name: Типы и тесты бэка
+        run: npx prisma generate --schema backend/prisma/schema.prisma && npm test -w backend
+
       - name: Типы и сборка фронта
         run: npm run build -w frontend
-        env:
-          VITE_USE_MOCK: 'true'
