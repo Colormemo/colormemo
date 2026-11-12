@@ -43,8 +43,15 @@ ENV NODE_ENV=production
 
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./
-COPY --from=build /app/packages/shared/dist ./packages/shared/dist
-COPY --from=build /app/packages/shared/package.json ./packages/shared/
+
+# Общий пакет копируется целиком, вместе со своим node_modules.
+# Это важно: npm поднимает в корневой node_modules не всё, часть
+# зависимостей остаётся внутри пакета — например culori, на которой
+# держится вся цветовая математика. Если скопировать только dist,
+# образ соберётся и даже запустится, а упадёт уже при первом запросе,
+# на `Cannot find module 'culori'`.
+COPY --from=build /app/packages ./packages
+
 COPY --from=build /app/backend/dist ./backend/dist
 COPY --from=build /app/backend/package.json ./backend/
 COPY --from=build /app/backend/prisma ./backend/prisma
