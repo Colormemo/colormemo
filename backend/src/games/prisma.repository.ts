@@ -6,10 +6,18 @@ import type { PrismaClient } from '@prisma/client';
 
 import type { Difficulty, GameType } from '@colormemo/shared';
 
-import type { SaveResultInput, StoredTask, TaskRepository } from './repository';
+import type {
+  AppRepository,
+  AttemptRow,
+  SaveResultInput,
+  StoredTask,
+  UserRecord,
+} from './repository';
 
-export class PrismaTaskRepository implements TaskRepository {
+export class PrismaRepository implements AppRepository {
   constructor(private readonly prisma: PrismaClient) {}
+
+  // --- Задания -------------------------------------------------------------
 
   async createTask(task: Omit<StoredTask, 'id' | 'answered'>): Promise<StoredTask> {
     const created = await this.prisma.gameTask.create({
@@ -80,5 +88,51 @@ export class PrismaTaskRepository implements TaskRepository {
     });
 
     return best?.score ?? null;
+  }
+
+  // --- Пользователи --------------------------------------------------------
+
+  async createUser(login: string, passwordHash: string): Promise<UserRecord> {
+    const created = await this.prisma.user.create({ data: { login, passwordHash } });
+    return created;
+  }
+
+  async findUserByLogin(login: string): Promise<UserRecord | null> {
+    // mode: 'insensitive' — чтобы «Masha» и «masha» считались одним логином.
+    return this.prisma.user.findFirst({
+      where: { login: { equals: login, mode: 'insensitive' } },
+    });
+  }
+
+  async findUserById(id: string): Promise<UserRecord | null> {
+    return this.prisma.user.findUnique({ where: { id } });
+  }
+
+  // --- Статистика ----------------------------------------------------------
+
+  async attempts(userId: string, limit?: number): Promise<AttemptRow[]> {
+    const rows = await this.prisma.result.findMany({
+      where: { task: { userId } },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      select: {
+        id: true,
+        accuracy: true,
+        score: true,
+        responseTimeMs: true,
+        createdAt: true,
+        task: { select: { gameType: true, difficulty: true } },
+      },
+    });
+
+    return rows.map((row) => ({
+      id: row.id,
+      gameType: row.task.gameType as GameType,
+      difficulty: row.task.difficulty as Difficulty,
+      accuracy: row.accuracy,
+      score: row.score,
+      responseTimeMs: row.responseTimeMs,
+      playedAt: row.createdAt,
+    }));
   }
 }

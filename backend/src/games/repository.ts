@@ -1,16 +1,21 @@
 /**
- * Хранилище заданий и результатов — описано интерфейсом, а не привязано к базе.
+ * Хранилище — описано интерфейсами, а не привязано к базе.
  *
  * Зачем так. Игровая логика не должна знать, куда именно пишутся данные.
  * Благодаря этому:
  *   - игровую логику и все ручки API можно протестировать без Postgres
  *     (в тестах подставляется реализация в памяти);
- *   - я могу писать и запускать бэк, пока Настя ещё делает схему базы:
- *     `npm run dev:nodb` поднимает сервер без базы вообще;
- *   - при правках схемы меняется только один файл prisma.repository.ts.
+ *   - приложение запускается и работает до поднятия базы:
+ *     `npm run dev:nodb` держит данные в файле рядом с проектом;
+ *   - при правках схемы меняется только prisma.repository.ts.
+ *
+ * Интерфейсы разделены по смыслу (задания, пользователи, статистика),
+ * а реализации собирают их вместе в AppRepository.
  */
 
 import type { Difficulty, GameType } from '@colormemo/shared';
+
+// --- Задания и результаты --------------------------------------------------
 
 /** Запись о выданном задании — то, что сервер обязан помнить до ответа игрока. */
 export interface StoredTask {
@@ -45,3 +50,49 @@ export interface TaskRepository {
     exceptTaskId: string,
   ): Promise<number | null>;
 }
+
+// --- Пользователи ----------------------------------------------------------
+
+export interface UserRecord {
+  id: string;
+  login: string;
+  /** Результат scrypt, а не пароль. Наружу не отдаётся никогда. */
+  passwordHash: string;
+  createdAt: Date;
+}
+
+export interface UserRepository {
+  createUser(login: string, passwordHash: string): Promise<UserRecord>;
+  /**
+   * Поиск по логину. Регистр не учитывается: иначе «Masha» и «masha»
+   * станут разными аккаунтами, а человек будет считать, что пароль забыл.
+   */
+  findUserByLogin(login: string): Promise<UserRecord | null>;
+  findUserById(id: string): Promise<UserRecord | null>;
+}
+
+// --- Статистика и история --------------------------------------------------
+
+/** Одна отвеченная попытка — строка для истории и для подсчёта агрегатов. */
+export interface AttemptRow {
+  id: string;
+  gameType: GameType;
+  difficulty: Difficulty;
+  accuracy: number;
+  score: number;
+  responseTimeMs: number;
+  playedAt: Date;
+}
+
+export interface StatsRepository {
+  /**
+   * Все отвеченные попытки игрока, новые сначала.
+   * Агрегаты считаются из них на стороне сервиса, а не запросом в базе:
+   * объём данных одного игрока маленький, зато формула одна и та же
+   * для Postgres и для режима без базы — расходиться им негде.
+   */
+  attempts(userId: string, limit?: number): Promise<AttemptRow[]>;
+}
+
+/** Всё хранилище целиком: именно это получает приложение. */
+export interface AppRepository extends TaskRepository, UserRepository, StatsRepository {}

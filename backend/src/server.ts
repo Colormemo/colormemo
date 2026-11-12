@@ -2,19 +2,19 @@ import path from 'node:path';
 
 import { createApp } from './app';
 import { env } from './env';
-import { MemoryTaskRepository } from './games/memory.repository';
-import type { TaskRepository } from './games/repository';
+import { MemoryRepository } from './games/memory.repository';
+import type { AppRepository } from './games/repository';
 
-async function buildRepository(): Promise<TaskRepository> {
+async function buildRepository(): Promise<AppRepository> {
   if (env.useMemoryDb) {
-    console.log('Режим без базы: задания хранятся в памяти и пропадут при перезапуске');
-    return new MemoryTaskRepository();
+    console.log(`Режим без базы: данные лежат в ${env.dataFile}`);
+    return new MemoryRepository({ filePath: env.dataFile });
   }
 
-  // Prisma подключается только когда действительно нужна, поэтому режим без базы
-  // работает даже до первого `prisma generate`.
+  // Prisma подключается только когда действительно нужна, поэтому режим
+  // без базы работает даже до первого `prisma generate`.
   const { PrismaClient } = await import('@prisma/client');
-  const { PrismaTaskRepository } = await import('./games/prisma.repository');
+  const { PrismaRepository } = await import('./games/prisma.repository');
 
   const prisma = new PrismaClient();
   await prisma.$connect();
@@ -26,7 +26,7 @@ async function buildRepository(): Promise<TaskRepository> {
   process.on('SIGINT', stop);
   process.on('SIGTERM', stop);
 
-  return new PrismaTaskRepository(prisma);
+  return new PrismaRepository(prisma);
 }
 
 async function main() {
