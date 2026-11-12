@@ -1,9 +1,19 @@
-# База данных для разработки.
-# Запуск:  docker compose up -d
-# Остановка: docker compose down   (данные сохраняются)
-# Снести данные и начать с чистой базы: docker compose down -v
+# Запуск проекта.
 #
-# Порт 5433, а не стандартный 5432 — чтобы не конфликтовать с локально
+# В разработке нужна только база:
+#   docker compose up -d          поднять базу и Adminer
+#   docker compose down           остановить (данные сохраняются)
+#   docker compose down -v        снести данные и начать с чистой базы
+#
+# Приложение целиком, как оно работает у пользователя:
+#   docker compose --profile full up -d --build
+#   затем http://localhost:3000
+#
+# Приложение вынесено в профиль full, чтобы при обычной разработке
+# не пересобирать образ на каждую правку: фронт и бэк в это время
+# запускаются напрямую через npm, а в контейнере живёт одна база.
+#
+# Порт базы 5433, а не стандартный 5432 — чтобы не конфликтовать с локально
 # установленным Postgres и с занятыми портами на Windows.
 
 services:
@@ -24,6 +34,29 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+
+  # Приложение целиком: сайт и API на одном порту.
+  app:
+    profiles: ['full']
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: colormemo-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Внутри сети compose база доступна по имени сервиса и порту 5432,
+      # проброс 5433 относится только к обращениям с хоста.
+      DATABASE_URL: postgresql://app:dev@db:5432/colormemo?schema=public
+      NODE_ENV: production
+      PORT: 3000
+      # Для учебного запуска годится, в настоящем развёртывании секрет
+      # задаётся снаружи и в репозиторий не попадает.
+      AUTH_SECRET: ${AUTH_SECRET:-change-me-before-any-real-deploy}
+    ports:
+      - '3000:3000'
 
   # Веб-интерфейс к базе: http://localhost:8080
   # Система: PostgreSQL, сервер: db, пользователь: app, пароль: dev, база: colormemo

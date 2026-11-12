@@ -1,49 +1,39 @@
 /**
- * Регистрация. Задача 33 по лабе 4, серверная часть за Володиной.
+ * Регистрация. Задача 33 по лабе 4.
+ *
+ * Почта не спрашивается намеренно: подтверждать её нечем, а хранить личные
+ * данные без необходимости не стоит. Для тренажёра достаточно логина.
  */
 
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 
+import { CredentialsForm } from '../auth/CredentialsForm';
+import { useAuth } from '../auth/AuthContext';
 import { ROUTES } from '../routes';
 
 export function RegisterPage() {
+  const { user, register } = useAuth();
+  const navigate = useNavigate();
+
+  if (user) return <Navigate to={ROUTES.games} replace />;
+
   return (
     <section className="page page--narrow">
-      <h1>Регистрация</h1>
+      <header className="page__head">
+        <h1>Регистрация</h1>
+        <p className="page__lead">Логин и пароль — больше ничего не нужно.</p>
+      </header>
 
-      <form
-        className="form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          // TODO (задача 33): отправка на /api/auth/register после готовности ручки
+      <CredentialsForm
+        submitLabel="Создать аккаунт"
+        validate
+        onSubmit={async (loginName, password) => {
+          await register(loginName, password);
+          navigate(ROUTES.games, { replace: true });
         }}
-      >
-        <label className="field">
-          Логин
-          <input name="login" type="text" autoComplete="username" required minLength={3} />
-        </label>
+      />
 
-        <label className="field">
-          Пароль
-          <input
-            name="password"
-            type="password"
-            autoComplete="new-password"
-            required
-            minLength={8}
-          />
-        </label>
-
-        <button type="submit" className="primary" disabled>
-          Зарегистрироваться
-        </button>
-
-        <p className="form__note">
-          Регистрация заработает после подключения авторизации на сервере.
-        </p>
-      </form>
-
-      <p>
+      <p className="page__note">
         Уже есть аккаунт? <Link to={ROUTES.login}>Войти</Link>
       </p>
     </section>

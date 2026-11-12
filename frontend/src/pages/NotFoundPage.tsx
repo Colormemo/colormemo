@@ -4,10 +4,13 @@ import { ROUTES } from '../routes';
 
 export function NotFoundPage() {
   return (
-    <section className="page">
-      <h1>Страница не найдена</h1>
-      <p className="lead">Возможно, адрес набран с ошибкой или раздел ещё не готов.</p>
-      <Link to={ROUTES.home} className="primary primary--link">
+    <section className="page page--narrow">
+      <header className="page__head">
+        <h1>Страница не найдена</h1>
+        <p className="page__lead">Возможно, адрес набран с ошибкой или раздел ещё не готов.</p>
+      </header>
+
+      <Link to={ROUTES.home} className="button">
         На главную
       </Link>
     </section>

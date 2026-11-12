@@ -2,7 +2,8 @@
  * Маршрутизация приложения. Задача 32 по лабе 4.
  *
  * Все страницы лежат внутри общего каркаса AppLayout, поэтому шапка
- * и навигация описаны один раз.
+ * и навигация описаны один раз. Профиль и статистика закрыты RequireAuth:
+ * без аккаунта показывать там нечего.
  *
  * Роутер выбран обычный, с адресами вида /games/repeat-color, а не с решёткой:
  * фронт и сервер живут на одном домене, и сервер отдаёт index.html на любой
@@ -12,6 +13,8 @@
 
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
+import { AuthProvider } from './auth/AuthContext';
+import { RequireAuth } from './auth/RequireAuth';
 import { AppLayout } from './layout/AppLayout';
 import { GamePage } from './pages/GamePage';
 import { GamesPage } from './pages/GamesPage';
@@ -26,22 +29,27 @@ import { ROUTES } from './routes';
 export function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route element={<AppLayout />}>
-          <Route path={ROUTES.home} element={<HomePage />} />
-          <Route path={ROUTES.games} element={<GamesPage />} />
-          <Route path={ROUTES.gamePattern} element={<GamePage />} />
-          <Route path={ROUTES.login} element={<LoginPage />} />
-          <Route path={ROUTES.register} element={<RegisterPage />} />
-          <Route path={ROUTES.profile} element={<ProfilePage />} />
-          <Route path={ROUTES.stats} element={<StatsPage />} />
+      <AuthProvider>
+        <Routes>
+          <Route element={<AppLayout />}>
+            <Route path={ROUTES.home} element={<HomePage />} />
+            <Route path={ROUTES.games} element={<GamesPage />} />
+            <Route path={ROUTES.gamePattern} element={<GamePage />} />
+            <Route path={ROUTES.login} element={<LoginPage />} />
+            <Route path={ROUTES.register} element={<RegisterPage />} />
 
-          {/* Старый адрес прототипа, чтобы ссылки из чатов не ломались */}
-          <Route path="/game" element={<Navigate to={ROUTES.games} replace />} />
+            <Route element={<RequireAuth />}>
+              <Route path={ROUTES.profile} element={<ProfilePage />} />
+              <Route path={ROUTES.stats} element={<StatsPage />} />
+            </Route>
 
-          <Route path="*" element={<NotFoundPage />} />
-        </Route>
-      </Routes>
+            {/* Старый адрес прототипа, чтобы ссылки из чатов не ломались */}
+            <Route path="/game" element={<Navigate to={ROUTES.games} replace />} />
+
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
