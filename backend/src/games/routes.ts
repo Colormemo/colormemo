@@ -8,6 +8,7 @@ import { z } from 'zod';
 
 import { MAX_DIFFICULTY, GAME_TYPES, type Difficulty, type GameType } from '@colormemo/shared';
 
+import { currentUserId } from '../auth/session';
 import type { GamesService } from './service';
 
 const hex = z
@@ -39,11 +40,12 @@ export function gamesRouter(games: GamesService): Router {
   router.post('/task', async (req, res, next) => {
     try {
       const body = startTaskSchema.parse(req.body);
-      // TODO (Настя): брать userId из токена в cookie, когда появится авторизация.
+      // Гость тоже может играть, просто его результат никуда не попадёт:
+      // userId останется null, и в статистику задание не войдёт.
       const task = await games.createTask(
         body.gameType as GameType,
         body.difficulty as Difficulty,
-        null,
+        currentUserId(req),
       );
       res.json(task);
     } catch (error) {
@@ -54,7 +56,7 @@ export function gamesRouter(games: GamesService): Router {
   router.post('/answer', async (req, res, next) => {
     try {
       const body = submitAnswerSchema.parse(req.body);
-      const result = await games.submitAnswer(body, null);
+      const result = await games.submitAnswer(body, currentUserId(req));
       res.json(result);
     } catch (error) {
       next(error);

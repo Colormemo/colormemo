@@ -4,12 +4,16 @@ import path from 'node:path';
 import express, { type Express, type NextFunction, type Request, type Response } from 'express';
 import { ZodError } from 'zod';
 
+import { authRouter } from './auth/routes';
+import { AuthError, AuthService } from './auth/service';
 import { gamesRouter } from './games/routes';
 import { GameError, GamesService } from './games/service';
-import type { TaskRepository } from './games/repository';
+import type { AppRepository } from './games/repository';
+import { statsRouter } from './stats/routes';
+import { StatsService } from './stats/service';
 
 export interface AppOptions {
-  repo: TaskRepository;
+  repo: AppRepository;
   /** Папка с собранным фронтом. Пустая строка или отсутствующая папка — только API. */
   clientDir?: string;
 }
@@ -22,19 +26,15 @@ export function createApp({ repo, clientDir = '' }: AppOptions): Express {
   const app = express();
 
   app.use(express.json({ limit: '32kb' }));
-  // TODO (Настя): для авторизации понадобится чтение cookie.
-  // Добавь cookie-parser вместе с @types/cookie-parser той же мажорной версии,
-  // что и @types/express, иначе типы обработчиков не сойдутся.
 
   // --- API ---------------------------------------------------------------
   app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok', time: new Date().toISOString() });
   });
 
+  app.use('/api/auth', authRouter(new AuthService(repo)));
   app.use('/api/games', gamesRouter(new GamesService(repo)));
-
-  // TODO (Настя): app.use('/api/auth', authRouter(...)) и app.use('/api/stats', ...).
-  // Типы запросов и ответов уже описаны в packages/shared/src/api.ts.
+  app.use('/api/stats', statsRouter(new StatsService(repo)));
 
   // Неизвестная ручка API должна отвечать JSON, а не страницей фронта.
   app.use('/api', (_req, res) => {
@@ -70,7 +70,7 @@ export function createApp({ repo, clientDir = '' }: AppOptions): Express {
       return;
     }
 
-    if (error instanceof GameError) {
+    if (error instanceof GameError || error instanceof AuthError) {
       res.status(error.status).json({ error: error.message });
       return;
     }
