@@ -60,10 +60,21 @@ export function CredentialsForm({ submitLabel, validate, onSubmit }: Props) {
           name="login"
           type="text"
           autoComplete="username"
+          placeholder="например, masha"
           value={login}
           onChange={(event) => setLogin(event.target.value)}
           required
         />
+        {/*
+          Подсказка стоит под своим полем, а не под паролем: иначе человек
+          читает правило про логин как требование к паролю и не понимает,
+          что именно не так. На этом спотыкались при проверке.
+        */}
+        {validate && (
+          <span className="field__hint">
+            Не почта, а придуманное имя: латинские буквы, цифры, дефис и подчёркивание.
+          </span>
+        )}
       </label>
 
       <label className="field">
@@ -76,12 +87,7 @@ export function CredentialsForm({ submitLabel, validate, onSubmit }: Props) {
           onChange={(event) => setPassword(event.target.value)}
           required
         />
-        {validate && (
-          <span className="field__hint">
-            Не короче {PASSWORD_MIN_LENGTH} символов. Логин — латиница, цифры, дефис и
-            подчёркивание.
-          </span>
-        )}
+        {validate && <span className="field__hint">Не короче {PASSWORD_MIN_LENGTH} символов.</span>}
       </label>
 
       <button type="submit" className="button" disabled={busy}>
