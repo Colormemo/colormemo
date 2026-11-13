@@ -1,218 +1,144 @@
 /*
- * Главная страница. Общие переменные и правила интерфейса лежат
- * в styles.css, здесь только блоки, которых больше нигде нет:
- * первый экран, объяснение точности и перечень игр.
+ * Главная страница. Переменные и общие компоненты — в styles.css,
+ * здесь только то, чего больше нигде нет: первый экран и блок
+ * с объяснением точности.
  */
 
 .home {
-  display: block;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 16px 16px 80px;
+  display: grid;
+  gap: 48px;
 }
 
 /* --- Первый экран --------------------------------------------------------- */
 
 .hero {
-  background: var(--booth);
-  padding: 56px 16px 64px;
-}
-
-.hero__inner {
-  max-width: 720px;
-  margin: 0 auto;
   display: grid;
-  grid-template-columns: 180px 1fr;
-  gap: 32px;
-  align-items: center;
-}
-
-.hero__sample {
-  aspect-ratio: 1;
-  border-radius: var(--radius);
+  justify-items: center;
+  gap: 18px;
+  text-align: center;
+  padding: 56px 20px 8px;
 }
 
 .hero__title {
   margin: 0;
-  font-size: clamp(30px, 6vw, 44px);
-  font-weight: 600;
-  line-height: 1.08;
-  letter-spacing: -0.02em;
-  color: #fff;
+  max-width: 16ch;
+  font-size: clamp(32px, 6vw, 54px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
   text-wrap: balance;
 }
 
+/* Выделенное слово — акцентом кита, а не просто жирным. */
+.hero__you {
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
 .hero__text {
-  margin: 16px 0 24px;
+  margin: 0;
   max-width: 46ch;
   font-size: 17px;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.82);
+  color: var(--muted-ink);
 }
 
-.hero__cta {
-  display: inline-flex;
-  align-items: center;
-  min-height: 48px;
-  padding: 0 28px;
-  border-radius: var(--radius);
-  background: #fff;
-  color: var(--ink);
-  font-size: 17px;
-  font-weight: 500;
-  text-decoration: none;
+/* --- Секции --------------------------------------------------------------- */
+
+.home__section {
+  display: grid;
+  gap: 16px;
 }
 
-.hero__cta:hover {
-  background: var(--paper);
-}
-
-/* --- Как считается результат ---------------------------------------------- */
-
-.explain {
-  background: var(--paper);
-  padding: 56px 16px;
-}
-
-.explain__inner {
-  max-width: 720px;
-  margin: 0 auto;
-}
-
-.explain h2 {
-  margin: 0 0 20px;
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+.home__title {
+  margin: 0;
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
   max-width: 24ch;
 }
 
-/* Своя раскладка сравнения: на главной рядом с образцами стоит ещё
-   и крупная цифра точности, поэтому ряд выравнивается по низу. */
+/* --- Как считается точность ----------------------------------------------- */
+
+.explain {
+  display: grid;
+  gap: 20px;
+  padding: 24px;
+  background: var(--surface);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow);
+}
+
+/* Ряд с образцами стоит на нейтрально-сером: рядом с ними не должно быть
+   ни белого, ни фирменного синего — иначе оттенок читается иначе. */
 .explain__row {
   display: flex;
   align-items: flex-end;
-  gap: 20px;
+  gap: 22px;
   flex-wrap: wrap;
-  margin-bottom: 20px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 20px 28px;
+  border-radius: var(--r-field);
+  background: var(--booth);
 }
 
 .explain__item {
+  margin: 0;
   display: grid;
   gap: 8px;
 }
 
 .explain__chip {
-  width: 92px;
-  height: 64px;
-  border-radius: var(--radius);
+  width: 96px;
+  height: 68px;
+  border-radius: 10px;
 }
 
 .explain__label {
-  font-size: 14px;
-  color: var(--muted-ink);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .explain__score {
-  font-size: 40px;
-  font-weight: 600;
+  font-size: 44px;
+  font-weight: 700;
   line-height: 1;
+  letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.03em;
+  color: #fff;
 }
 
-.explain p {
+.explain__text {
   margin: 0;
-  max-width: 62ch;
+  max-width: 68ch;
   font-size: 16px;
   line-height: 1.55;
   color: var(--muted-ink);
 }
 
-/* --- Игры ----------------------------------------------------------------- */
-
-.games-teaser {
-  padding: 56px 16px 72px;
-  background: var(--surface);
-  border-top: 1px solid var(--line);
-}
-
-.games-teaser__inner {
-  max-width: 720px;
-  margin: 0 auto;
-}
-
-.games-teaser h2 {
-  margin: 0 0 24px;
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-
-.teaser-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 2px;
-}
-
-.teaser {
-  display: grid;
-  grid-template-columns: 56px 1fr auto;
-  align-items: center;
-  gap: 20px;
-  padding: 20px 4px;
-  border-top: 1px solid var(--line);
-  text-decoration: none;
-  color: inherit;
-}
-
-.teaser:last-child {
-  border-bottom: 1px solid var(--line);
-}
-
-a.teaser:hover {
-  background: var(--paper);
-}
-
-.teaser__chip {
-  height: 40px;
-  border-radius: var(--radius);
-}
-
-.teaser__name {
-  font-size: 18px;
-  font-weight: 500;
-}
-
-.teaser__about {
-  margin: 2px 0 0;
-  font-size: 15px;
-  color: var(--muted-ink);
-}
-
-.teaser__state {
-  font-size: 14px;
-  color: var(--muted-ink);
-  white-space: nowrap;
-}
-
 /* --- Телефон -------------------------------------------------------------- */
 
 @media (max-width: 560px) {
-  .hero__inner {
-    grid-template-columns: 1fr;
-    gap: 24px;
+  .home {
+    gap: 36px;
+    padding: 12px 14px 64px;
   }
 
-  .hero__sample {
-    width: 120px;
+  .hero {
+    padding: 32px 4px 0;
   }
 
-  .teaser {
-    grid-template-columns: 40px 1fr;
-    row-gap: 8px;
+  .explain__row {
+    gap: 16px;
+    padding: 16px;
   }
 
-  .teaser__state {
-    grid-column: 2;
+  .explain__chip {
+    width: 72px;
+    height: 56px;
   }
 }
