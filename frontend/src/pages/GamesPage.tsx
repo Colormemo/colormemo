@@ -1,17 +1,26 @@
 /**
  * Выбор игры.
  *
- * Запланированная игра из плана-максимум показана отдельной строкой без
- * ссылки: так видно, что раздел будет расти, и экран не придётся
- * переделывать, когда она появится.
+ * Запланированная игра из плана-максимум показана карточкой без ссылки:
+ * так видно, что раздел будет расти, и экран не придётся переделывать,
+ * когда она появится.
  */
 
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+
+import { randomTargetColor } from '@colormemo/shared';
 
 import { GAME_CATALOG, STATUS_LABELS } from '../features/games/catalog';
 import { gamePath } from '../routes';
 
 export function GamesPage() {
+  // Обложки — настоящие цвета заданий, а не картинки из заготовки.
+  const covers = useMemo(
+    () => GAME_CATALOG.map(() => [randomTargetColor(), randomTargetColor()]),
+    [],
+  );
+
   return (
     <section className="page">
       <header className="page__head">
@@ -22,28 +31,39 @@ export function GamesPage() {
         </p>
       </header>
 
-      <ul className="game-list">
-        {GAME_CATALOG.map((game) => {
+      <ul className="cards">
+        {GAME_CATALOG.map((game, index) => {
           const available = game.status !== 'planned';
+          const [from, to] = covers[index];
 
           const body = (
             <>
-              <span className="game-row__name">{game.title}</span>
-              <span className="game-row__about">{game.description}</span>
-              <span className="game-row__state">
-                {available ? 'Играть →' : STATUS_LABELS[game.status]}
-              </span>
+              <div className="card__top">
+                <span className="card__name">{game.title}</span>
+                <span className={available ? 'badge' : 'badge badge--quiet'}>
+                  {STATUS_LABELS[game.status]}
+                </span>
+              </div>
+
+              <p className="card__about">{game.description}</p>
+
+              <div
+                className="card__thumb"
+                style={{ background: `linear-gradient(135deg, ${from}, ${to})` }}
+              />
+
+              <span className="card__play">{available ? 'Играть' : 'Скоро'}</span>
             </>
           );
 
           return (
             <li key={game.slug}>
               {available ? (
-                <Link to={gamePath(game.slug)} className="game-row">
+                <Link to={gamePath(game.slug)} className="card">
                   {body}
                 </Link>
               ) : (
-                <div className="game-row game-row--off">{body}</div>
+                <div className="card card--off">{body}</div>
               )}
             </li>
           );

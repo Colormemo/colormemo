@@ -1,32 +1,46 @@
 /*
- * Оформление приложения.
+ * Оформление приложения по UI-kit команды (задачи 12–13 по лабе 4).
  *
- * Главное правило, из которого следует всё остальное: интерфейс намеренно
- * обесцвечен. Любой насыщенный цвет рядом с образцом смещает восприятие
- * оттенка — по этой же причине цвет в типографии и живописи оценивают
- * на нейтрально-сером фоне. Поэтому вся краска на экране приходит только
- * из самих заданий, а интерфейс остаётся серым: серый фон, чёрный текст,
- * чёрные кнопки. Это не минимализм ради вида, это условие измерения.
+ * Все значения собраны здесь, в переменных: цвета, скругления, тени.
+ * Разметка их не знает, поэтому правка кита меняет вид всего приложения,
+ * а компоненты трогать не нужно.
  *
- * Отсюда же мелкие решения: скругления 2 пикселя (крупный радиус съедает
- * углы образца и мешает сравнивать соседние плитки), рамки тонкие,
- * теней нет (тень подмешивает к образцу серый ореол).
- *
- * Значения собраны в переменных: когда дизайнеры доведут UI-kit
- * (задачи 12 и 13 по лабе 4), меняются они, а разметку трогать не нужно.
+ * Одно исключение из общего стиля сделано намеренно. Поле вокруг образца
+ * цвета и подложка под вариантами ответа остаются нейтрально-серыми:
+ * насыщенный цвет рядом с образцом смещает восприятие оттенка, и синяя
+ * кнопка возле плитки сделала бы замер нечестным. По этой же причине цвет
+ * в типографии оценивают на сером фоне. Везде, где рядом нет образца,
+ * работает фирменный синий.
  */
 
 :root {
-  --ink: #17171a;
-  --paper: #f6f6f5;
+  /* Фирменный синий из кита: обычное состояние, наведение, нажатие */
+  --accent: #4f46e5;
+  --accent-hover: #635bf0;
+  --accent-press: #3a30c2;
+  /* Светлая заливка того же тона — для нажатых белых кнопок и отметок */
+  --accent-soft: #e9eafe;
+
+  --danger: #ef3b3b;
+  --danger-hover: #f26161;
+  --danger-soft: #fdecec;
+
+  --ink: #141418;
+  --muted-ink: #6b6b74;
+  --paper: #f2f2f5;
   --surface: #ffffff;
-  --line: #d6d6d2;
-  --muted-ink: #6e6e69;
-  /* Нейтрально-серый фон для показа образцов, примерно 18% отражения. */
+  --line: #e4e4e9;
+  --field: #f7f7fa;
+
+  /* Нейтрально-серое поле для показа образцов, примерно 18% отражения */
   --booth: #767676;
-  --danger: #8d2d22;
-  --danger-bg: #fdeeec;
-  --radius: 2px;
+
+  --r-pill: 999px;
+  --r-card: 18px;
+  --r-field: 12px;
+
+  --shadow: 0 2px 8px rgba(20, 20, 40, 0.08);
+  --shadow-lift: 0 8px 20px rgba(20, 20, 40, 0.13);
 
   color-scheme: light;
   font-family:
@@ -52,7 +66,7 @@ body {
 }
 
 a {
-  color: inherit;
+  color: var(--accent);
 }
 
 .app {
@@ -71,18 +85,23 @@ a {
 .header {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   flex-wrap: wrap;
-  padding: 14px 16px;
+  max-width: 1000px;
+  margin: 16px auto 0;
+  padding: 10px 14px;
   background: var(--surface);
-  border-bottom: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  box-shadow: var(--shadow);
 }
 
 .logo {
   font-size: 18px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   text-decoration: none;
+  color: var(--ink);
+  padding: 0 10px;
 }
 
 .nav {
@@ -92,92 +111,101 @@ a {
 }
 
 .nav__link {
-  min-height: 40px;
+  min-height: 38px;
   display: inline-flex;
   align-items: center;
-  padding: 0 12px;
-  border-radius: var(--radius);
+  padding: 0 14px;
+  border-radius: var(--r-pill);
   color: var(--muted-ink);
   text-decoration: none;
+  font-size: 15px;
 }
 
 .nav__link:hover {
-  background: var(--paper);
+  background: var(--field);
   color: var(--ink);
 }
 
 .nav__link--on {
-  color: var(--ink);
-  font-weight: 500;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
 }
 
 .account {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .account__name {
-  font-weight: 500;
+  font-weight: 600;
   text-decoration: none;
-  padding: 0 4px;
+  color: var(--ink);
+  padding: 0 8px;
 }
 
 .account__exit {
-  min-height: 40px;
+  min-height: 38px;
   padding: 0 12px;
   border: none;
+  border-radius: var(--r-pill);
   background: none;
   color: var(--muted-ink);
   font: inherit;
+  font-size: 15px;
   cursor: pointer;
 }
 
 .account__exit:hover {
+  background: var(--field);
   color: var(--ink);
 }
 
 .account__cta {
-  min-height: 40px;
+  min-height: 38px;
   display: inline-flex;
   align-items: center;
-  padding: 0 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  padding: 0 18px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: #fff;
   text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
 }
 
 .account__cta:hover {
-  background: var(--paper);
+  background: var(--accent-hover);
 }
 
 /* --- Каркас страницы ------------------------------------------------------ */
 
 .page {
-  max-width: 720px;
+  max-width: 760px;
   margin: 0 auto;
-  padding: 40px 16px 64px;
+  padding: 36px 16px 72px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 24px;
   align-items: flex-start;
 }
 
 .page--narrow {
-  max-width: 400px;
+  max-width: 440px;
 }
 
 .page__head {
   display: grid;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
 }
 
 .page h1 {
   margin: 0;
-  font-size: clamp(26px, 5vw, 34px);
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-size: clamp(28px, 5vw, 38px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
   line-height: 1.1;
 }
 
@@ -211,45 +239,62 @@ a {
 
 .block__title {
   margin: 0;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
-/* --- Кнопки --------------------------------------------------------------- */
+/* --- Кнопки (из кита: пилюля, тень, три состояния) ------------------------ */
 
 .button {
   min-height: 48px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 24px;
-  border: 1px solid var(--ink);
-  border-radius: var(--radius);
-  background: var(--ink);
+  padding: 0 28px;
+  border: none;
+  border-radius: var(--r-pill);
+  background: var(--accent);
   color: #fff;
   font: inherit;
-  font-weight: 500;
+  font-weight: 600;
   text-decoration: none;
   cursor: pointer;
+  box-shadow: var(--shadow);
+  transition:
+    background 0.15s,
+    box-shadow 0.15s,
+    transform 0.05s;
 }
 
 .button:hover:not(:disabled) {
-  background: #000;
+  background: var(--accent-hover);
+  box-shadow: var(--shadow-lift);
+}
+
+.button:active:not(:disabled) {
+  background: var(--accent-press);
+  box-shadow: var(--shadow);
+  transform: translateY(1px);
 }
 
 .button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .button--quiet {
-  background: transparent;
+  background: var(--surface);
   color: var(--ink);
-  border-color: var(--line);
 }
 
 .button--quiet:hover:not(:disabled) {
-  background: var(--paper);
+  background: var(--surface);
+}
+
+.button--quiet:active:not(:disabled) {
+  background: var(--accent-soft);
 }
 
 /* --- Сообщения и состояния ------------------------------------------------ */
@@ -257,17 +302,18 @@ a {
 .notice {
   width: 100%;
   margin: 0;
-  padding: 12px 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  padding: 14px 18px;
+  border-radius: var(--r-field);
   background: var(--surface);
   color: var(--muted-ink);
+  box-shadow: var(--shadow);
 }
 
 .notice--error {
-  border-color: var(--danger);
-  background: var(--danger-bg);
+  background: var(--danger-soft);
   color: var(--danger);
+  box-shadow: none;
+  font-weight: 500;
 }
 
 .empty {
@@ -276,19 +322,19 @@ a {
   gap: 10px;
   justify-items: start;
   padding: 28px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--r-card);
   background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
 .empty--error {
-  border-color: var(--danger);
-  background: var(--danger-bg);
+  background: var(--danger-soft);
+  box-shadow: none;
 }
 
 .empty__title {
   margin: 0;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .empty__hint {
@@ -305,8 +351,12 @@ a {
 
 .form {
   display: grid;
-  gap: 20px;
+  gap: 18px;
   width: 100%;
+  padding: 24px;
+  background: var(--surface);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow);
 }
 
 .field {
@@ -316,79 +366,126 @@ a {
 
 .field__label {
   font-size: 14px;
+  font-weight: 500;
   color: var(--muted-ink);
 }
 
 .field input {
   min-height: 48px;
-  padding: 0 14px;
+  padding: 0 16px;
   font: inherit;
   color: var(--ink);
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  background: var(--field);
+  border: 1px solid transparent;
+  border-radius: var(--r-field);
 }
 
 .field input:focus {
-  outline: 2px solid var(--ink);
-  outline-offset: -2px;
+  outline: none;
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .field__hint {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--muted-ink);
 }
 
-/* --- Список игр ----------------------------------------------------------- */
+/* --- Карточки игр --------------------------------------------------------- */
 
-.game-list {
+.cards {
   list-style: none;
   margin: 0;
   padding: 0;
   width: 100%;
-  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
 }
 
-.game-row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 4px 20px;
-  padding: 20px 4px;
-  border-bottom: 1px solid var(--line);
+.card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  background: var(--surface);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow);
   text-decoration: none;
   color: inherit;
+  transition:
+    box-shadow 0.15s,
+    transform 0.15s;
 }
 
-.game-row:hover {
-  background: var(--surface);
+a.card:hover {
+  box-shadow: var(--shadow-lift);
+  transform: translateY(-2px);
 }
 
-.game-row--off {
-  color: var(--muted-ink);
+.card--off {
+  opacity: 0.65;
 }
 
-.game-row--off:hover {
-  background: none;
+.card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
 }
 
-.game-row__name {
+.card__name {
   font-size: 18px;
-  font-weight: 500;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
-.game-row__about {
-  grid-column: 1;
+.card__about {
+  margin: 0;
+  font-size: 15px;
   color: var(--muted-ink);
+}
+
+/* Обложка карточки — переход между двумя настоящими цветами заданий. */
+.card__thumb {
+  height: 108px;
+  border-radius: 12px;
+  margin-top: auto;
+}
+
+.card__play {
+  align-self: flex-start;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 22px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
   font-size: 15px;
 }
 
-.game-row__state {
-  grid-row: 1 / span 2;
-  grid-column: 2;
-  align-self: center;
-  font-size: 15px;
+.card--off .card__play {
+  background: var(--field);
   color: var(--muted-ink);
+}
+
+.badge {
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
   white-space: nowrap;
+}
+
+.badge--quiet {
+  background: var(--field);
+  color: var(--muted-ink);
 }
 
 /* --- Уровень сложности ---------------------------------------------------- */
@@ -396,39 +493,61 @@ a {
 .levels {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
+  padding: 5px;
+  background: var(--surface);
+  border-radius: var(--r-pill);
+  box-shadow: var(--shadow);
 }
 
 .levels__label {
   font-size: 14px;
   color: var(--muted-ink);
+  padding: 0 10px;
 }
 
 .levels__item {
-  min-height: 40px;
-  padding: 0 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
+  min-height: 38px;
+  padding: 0 18px;
+  border: none;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--muted-ink);
   font: inherit;
+  font-size: 15px;
   cursor: pointer;
 }
 
+.levels__item:hover:not(:disabled) {
+  background: var(--field);
+  color: var(--ink);
+}
+
 .levels__item--on {
-  background: var(--ink);
-  border-color: var(--ink);
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.levels__item--on:hover:not(:disabled) {
+  background: var(--accent-hover);
   color: #fff;
 }
 
 .levels__item:disabled {
-  opacity: 0.5;
   cursor: not-allowed;
 }
 
+/* Во время серии переключатель заблокирован, но выбранный уровень должен
+   остаться читаемым — гасим только невыбранные. */
+.levels__item:disabled:not(.levels__item--on) {
+  opacity: 0.45;
+}
+
 .levels__note {
-  margin: -20px 0 0;
-  font-size: 14px;
+  margin: -16px 0 0;
+  font-size: 13px;
   color: var(--muted-ink);
 }
 
@@ -437,12 +556,12 @@ a {
 .play {
   width: 100%;
   display: grid;
-  gap: 24px;
+  gap: 22px;
   justify-items: center;
-  padding: 32px 24px 40px;
+  padding: 28px 24px 34px;
   background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow);
 }
 
 .play__progress {
@@ -452,6 +571,11 @@ a {
   font-size: 14px;
   color: var(--muted-ink);
   font-variant-numeric: tabular-nums;
+}
+
+.play__score {
+  font-weight: 600;
+  color: var(--accent);
 }
 
 .play__intro {
@@ -487,16 +611,15 @@ a {
 }
 
 /*
- * Образец показывается на нейтрально-сером поле, а не прямо на белом:
- * белый фон осветляет восприятие оттенка, и подобрать его потом труднее,
- * чем было бы на нейтральном.
+ * Образец на нейтрально-сером поле — см. оговорку в начале файла.
+ * Белый фон осветляет восприятие оттенка, цветной сдвигает его.
  */
 .sample {
   width: 220px;
   height: 220px;
-  border-radius: var(--radius);
-  box-shadow: 0 0 0 24px var(--booth);
-  margin: 24px 0;
+  border-radius: 12px;
+  box-shadow: 0 0 0 26px var(--booth);
+  margin: 26px 0;
 }
 
 /* --- Обратный отсчёт ------------------------------------------------------ */
@@ -510,14 +633,16 @@ a {
 
 .countdown__track {
   width: 100%;
-  height: 3px;
-  background: var(--line);
+  height: 6px;
+  border-radius: var(--r-pill);
+  background: var(--field);
   overflow: hidden;
 }
 
 .countdown__bar {
   height: 100%;
-  background: var(--ink);
+  border-radius: var(--r-pill);
+  background: var(--accent);
   transform-origin: left center;
   /* Шаг отсчёта 100 мс; переход той же длины делает полосу ровной. */
   transition: transform 100ms linear;
@@ -536,12 +661,12 @@ a {
   gap: 16px;
   justify-items: center;
   width: 100%;
-  max-width: 260px;
+  max-width: 280px;
 }
 
 .picker .react-colorful {
   width: 100%;
-  height: 220px;
+  height: 230px;
 }
 
 .picker__preview {
@@ -550,8 +675,9 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius);
+  border-radius: var(--r-field);
   font-size: 14px;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
@@ -562,23 +688,26 @@ a {
   margin: 0;
   padding: 20px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
   gap: 12px;
   width: 100%;
-  max-width: 400px;
   /* Общее серое поле под плитками: так соседний вариант не подсвечивает
      соседа собственным цветом сквозь белый зазор. */
   background: var(--booth);
-  border-radius: var(--radius);
+  border-radius: var(--r-card);
 }
 
 .options__item {
   width: 100%;
   aspect-ratio: 1;
   border: none;
-  border-radius: var(--radius);
+  border-radius: 12px;
   cursor: pointer;
   padding: 0;
+  transition: transform 0.1s;
+}
+
+.options__item:hover {
+  transform: scale(1.03);
 }
 
 .options__item:focus-visible {
@@ -596,11 +725,12 @@ a {
 }
 
 .verdict__value {
-  font-size: 44px;
-  font-weight: 600;
+  font-size: 48px;
+  font-weight: 700;
   line-height: 1;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
+  color: var(--accent);
 }
 
 .verdict__label {
@@ -610,9 +740,12 @@ a {
 
 .compare {
   display: flex;
-  gap: 20px;
+  gap: 18px;
   flex-wrap: wrap;
   justify-content: center;
+  padding: 16px 20px;
+  border-radius: var(--r-card);
+  background: var(--booth);
 }
 
 .compare__item {
@@ -625,33 +758,34 @@ a {
 .compare__chip {
   width: 92px;
   height: 64px;
-  border-radius: var(--radius);
+  border-radius: 10px;
 }
 
 .compare__label {
-  font-size: 14px;
-  color: var(--muted-ink);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 /* --- Итоги серии ---------------------------------------------------------- */
 
 .summary {
   display: grid;
-  gap: 24px;
+  gap: 22px;
   justify-items: center;
   width: 100%;
-  max-width: 420px;
+  max-width: 430px;
 }
 
 .summary__title {
   margin: 0;
-  font-size: 22px;
-  font-weight: 600;
+  font-size: 23px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .summary__totals {
   display: flex;
-  gap: 40px;
+  gap: 36px;
   text-align: center;
 }
 
@@ -661,11 +795,12 @@ a {
 }
 
 .summary__value {
-  font-size: 36px;
-  font-weight: 600;
+  font-size: 38px;
+  font-weight: 700;
   line-height: 1;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
+  color: var(--accent);
 }
 
 .summary__label {
@@ -700,44 +835,52 @@ a {
 }
 
 .rounds__bar {
-  height: 6px;
-  background: var(--line);
+  height: 8px;
+  border-radius: var(--r-pill);
+  background: var(--field);
   display: block;
+  overflow: hidden;
 }
 
 .rounds__fill {
   display: block;
   height: 100%;
-  background: var(--ink);
+  border-radius: var(--r-pill);
+  background: var(--accent);
 }
 
 .rounds__accuracy {
   text-align: right;
   color: var(--ink);
+  font-weight: 600;
 }
 
 /* --- Статистика ----------------------------------------------------------- */
 
 .totals {
   display: flex;
-  gap: 40px;
+  gap: 16px;
   flex-wrap: wrap;
   width: 100%;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--line);
 }
 
 .totals__item {
+  flex: 1 1 150px;
   display: grid;
   gap: 4px;
+  padding: 18px 20px;
+  background: var(--surface);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow);
 }
 
 .totals__value {
-  font-size: 34px;
-  font-weight: 600;
+  font-size: 32px;
+  font-weight: 700;
   line-height: 1;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
+  color: var(--accent);
 }
 
 .totals__label {
@@ -751,14 +894,16 @@ a {
   padding: 0;
   width: 100%;
   display: grid;
-  gap: 2px;
+  gap: 12px;
 }
 
 .stat {
   display: grid;
-  gap: 12px;
-  padding: 20px 4px;
-  border-bottom: 1px solid var(--line);
+  gap: 14px;
+  padding: 20px;
+  background: var(--surface);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow);
 }
 
 .stat__head {
@@ -771,13 +916,13 @@ a {
 .stat__title {
   margin: 0;
   font-size: 17px;
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .chip {
-  padding: 2px 8px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  background: var(--field);
   font-size: 13px;
   color: var(--muted-ink);
   white-space: nowrap;
@@ -803,23 +948,25 @@ a {
 .stat__fact dd {
   margin: 0;
   font-size: 17px;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
 .spark {
   display: flex;
   align-items: flex-end;
-  gap: 3px;
-  height: 36px;
+  gap: 4px;
+  height: 40px;
 }
 
 .spark__bar {
-  width: 10px;
-  background: var(--line);
+  width: 12px;
+  border-radius: 3px;
+  background: var(--accent-soft);
 }
 
 .spark__bar:last-child {
-  background: var(--ink);
+  background: var(--accent);
 }
 
 /* --- Профиль -------------------------------------------------------------- */
@@ -830,7 +977,8 @@ a {
   margin: 0;
   padding: 0;
   width: 100%;
-  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 8px;
 }
 
 .records__item {
@@ -838,18 +986,23 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 14px 4px;
-  border-bottom: 1px solid var(--line);
+  padding: 14px 18px;
+  background: var(--surface);
+  border-radius: var(--r-field);
+  box-shadow: var(--shadow);
 }
 
 .records__game {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-weight: 500;
 }
 
 .records__value {
   font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--accent);
   white-space: nowrap;
 }
 
@@ -858,8 +1011,9 @@ a {
   grid-template-columns: 96px 1fr 56px 56px;
   align-items: center;
   gap: 12px;
-  padding: 12px 4px;
-  border-bottom: 1px solid var(--line);
+  padding: 12px 18px;
+  background: var(--surface);
+  border-radius: var(--r-field);
   font-variant-numeric: tabular-nums;
 }
 
@@ -880,6 +1034,10 @@ a {
   text-align: right;
 }
 
+.history__accuracy {
+  font-weight: 600;
+}
+
 .history__score {
   color: var(--muted-ink);
 }
@@ -887,27 +1045,31 @@ a {
 /* --- Телефон -------------------------------------------------------------- */
 
 @media (max-width: 560px) {
+  .header {
+    margin: 10px 10px 0;
+    border-radius: var(--r-card);
+  }
+
   .page {
-    padding: 28px 16px 48px;
-    gap: 24px;
+    padding: 24px 14px 56px;
+    gap: 20px;
   }
 
   .play {
-    padding: 24px 16px 32px;
+    padding: 22px 14px 28px;
   }
 
   .sample {
     width: 160px;
     height: 160px;
-    box-shadow: 0 0 0 16px var(--booth);
+    box-shadow: 0 0 0 18px var(--booth);
   }
 
   .countdown {
     width: 160px;
   }
 
-  .summary__totals,
-  .totals {
+  .summary__totals {
     gap: 24px;
   }
 
