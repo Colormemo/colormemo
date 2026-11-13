@@ -61,9 +61,7 @@ export function HomePage() {
               <>
                 <div className="card__top">
                   <span className="card__name">{game.title}</span>
-                  <span className={available ? 'badge' : 'badge badge--quiet'}>
-                    {STATUS_LABELS[game.status]}
-                  </span>
+                  {available && <span className="badge">{STATUS_LABELS[game.status]}</span>}
                 </div>
 
                 <p className="card__about">{game.description}</p>
